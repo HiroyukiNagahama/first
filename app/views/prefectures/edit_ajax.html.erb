@@ -1,0 +1,65 @@
+
+<tr>
+  <td colspan="4">
+    <div><button class="btn btn-danger close-window">close-x</button></div>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-6">
+      <h3>右へ移動</h3>
+      <div class="unlist">
+        <% @no_need_pref.each do |ga| %>
+        <%= render partial: 'prefectures_list', locals: { pref: ga } %>
+        <% end %>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <h3>左へ移動</h3>
+      <div class="list">
+        <% @goto_pref.each do |ge| %>
+          <%= render partial: 'prefectures_list', locals: { pref: ge }  %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+  </td>
+</tr>
+
+<script type="text/javascript">
+    $('.close-window').on('click', function(){
+        $('.close-window').closest('tr').remove();
+    })
+
+    $('.unlist').on('click', '.add', function() {
+        var $addBtn = $(this);
+        post_data($addBtn,'update_ajax','.list');
+
+    });
+    $('.list').on('click', '.delete',function() {
+        var $delBtn = $(this);
+        post_data($delBtn,'delete_ajax','.unlist');
+
+    });
+     function post_data(clickObj,action,list){
+         var code = clickObj.attr('id');
+         // var token = clickObj.closest('.row').find('input[name=authenticity_token]').val();
+         // -> jquery-ujs で対応
+         var data = {code: code}
+        $.ajax({
+            url: "prefectures/" + action,
+            type: "post",// post delete で分ける
+            data: data,
+            // body: JSON.stringify(data),
+            // contentType: 'json',
+            dataType: "html",
+            success: function(response_data) {
+                clickObj.closest('.row').remove();
+                $(list).append(response_data)
+            },
+            error: function(response_data) {
+                // html() と　renderpartial FIleで対応する
+                console.log("errror");
+            }
+        });
+    }
+    </script>

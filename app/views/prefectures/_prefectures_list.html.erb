@@ -1,0 +1,8 @@
+<% url =  pref.go_flag ? 'delete_ajax' : 'update_ajax' %>
+
+<div class="row">
+<div class="col-md-3 hhh"><%= pref.code %></div>
+<div class="col-md-3"><%= pref.name %></div>
+<div class="col-md-3"><%= pref.go_flag %></div>
+<div class="col-md-3"><button class="btn btn-warning <%= pref.go_flag ? 'delete' : 'add' %>" id="<%= pref.code %>">btn</button></div>
+</div>

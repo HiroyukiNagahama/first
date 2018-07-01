@@ -1,0 +1,47 @@
+<% provide(:title, 'Sign up') %>
+
+
+<table class="table table-dark">
+<thead>
+<tr>
+  <td>名称</td>
+  <td>コード</td>
+  <td>編集</td>
+
+</tr>
+</thead>
+  <tbody>
+  <% @prefectures.each do |p| %>
+  <tr>
+    <td><%= p.name %></td>
+    <td><%= p.code %></td>
+    <td><%= p.go_flag %></td>
+    <td><button class="btn btn-primary open-window" id="<%= p.code %>">編集だよ</button></td>
+  </tr>
+  <% end %>
+  </tbody>
+
+</table>
+
+<script type="text/javascript">
+ $('.open-window').on('click',function(){
+     $('.close-window').closest('tr').remove();
+     var $clickBtn = $(this);
+     var code = $clickBtn.attr('id');
+     console.log(code)
+     $.ajax({
+         url: "prefectures/edit_ajax/?code=" + code,
+         type: "GET",
+         data: {},
+         contentType: '',
+         dataType: "html",
+         success: function(response_data) {
+             $clickBtn.closest('tr').after(response_data)
+         },
+         error: function(data) {
+             alert("errror");
+         }
+     });
+ })
+
+</script>
