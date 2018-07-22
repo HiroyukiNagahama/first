@@ -6,6 +6,16 @@ Rails.application.routes.draw do
   get  '/signup',  to: 'users#new'
   resources :microposts
 
+  namespace :api, format: 'json' do
+    resources :task_api, only: [:index, :create, :update]
+  end
+
+  resources :tasks, only: [:index] do
+    collection do
+      get 'hoge'
+    end
+  end
+
   resources :prefectures, only: [:index] do
     collection do
       get 'edit_ajax'
