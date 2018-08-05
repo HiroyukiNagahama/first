@@ -40,5 +40,7 @@ $ rails test
 $ rails server
 ```
 
+bundle exec foreman start -f procfile
+
 詳しくは、[*Ruby on Rails チュートリアル*](https://railstutorial.jp/)
 を参考にしてください。

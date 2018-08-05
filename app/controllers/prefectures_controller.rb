@@ -21,6 +21,12 @@ class PrefecturesController < ApplicationController
     render partial: 'prefectures_list', locals: {pref: @p}
   end
 
+  # trip#indexで使用
+  def load_index
+    @prefectures = Prefecture.all.order(:code)
+    render json: @prefectures
+  end
+
   private
 
   def setup_update_params

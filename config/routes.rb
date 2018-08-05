@@ -21,6 +21,15 @@ Rails.application.routes.draw do
       get 'edit_ajax'
       post 'update_ajax'
       post 'delete_ajax'
+      get 'load_index'
+    end
+  end
+
+  resources :trips, only: [:index] do
+    collection do
+      get 'load_index'
+      patch 'update/:id', to: 'trips#update'
+      post 'delete'
     end
   end
 
