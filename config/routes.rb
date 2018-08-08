@@ -22,6 +22,7 @@ Rails.application.routes.draw do
       post 'update_ajax'
       post 'delete_ajax'
       get 'load_index'
+      get 'lists'
     end
   end
 

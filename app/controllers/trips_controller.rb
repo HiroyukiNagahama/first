@@ -15,14 +15,21 @@ class TripsController < ApplicationController
 
   def update
     trip = Trip.find_by(id: params[:id])
-    trip.update(name_params)
+    hoge = params[:trip][:visit_prefectures]
+    if hoge
+      trip.update(visit_prefectures: hoge)
+    else
+
+      trip.update(api_params)
+    end
+    p trip
     render json: trip
   end
 
   private
 
-  def name_params
-    params.require('trip').permit(:name, :main_prefecture)
+  def api_params
+    params.require(:trip).permit(:name, :main_prefecture, :visit_prefectures)
   end
 
 

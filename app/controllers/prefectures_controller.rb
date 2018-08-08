@@ -27,6 +27,12 @@ class PrefecturesController < ApplicationController
     render json: @prefectures
   end
 
+  def lists
+    a = Prefecture.all.collect{|p| { name: p.name } }
+    p a
+    render json: a
+  end
+
   private
 
   def setup_update_params
