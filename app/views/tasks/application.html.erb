@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title><%= @title %></title>
+  <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+  <link rel="shortcut icon" href="/images/app/favicon.png"/>
+  <%= stylesheet_link_tag "application", media: "all" %>
+  <%= javascript_include_tag "application" %>
+  <%#=https://github.com/activescaffold/active_scaffold/blob/master/CHANGELOG ActiveScaffold bug search & field_search cannot use without Ajax!! %>
+  <%#=bug search & field_search cannot use without Ajax fixed version 3.4.13(rails 4.2) this app 3.4.10(rails.4.0.8)%>
+  <%= csrf_meta_tags %>
+  <!-- moment.js (date library) -->
+  <script src="/tisa/lib/moment-js/moment.min.js"></script>
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+  <![endif]-->
+  <script src="/alte/js/plugins/datepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+  <script src="/alte/js/plugins/daterangepicker/daterangepicker.js" type="text/javascript"></script>
+</head>
+<body class="skin-blue">
+
+<header class="navbar navbar-fixed-top" role="banner">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a href="/" class="navbar-brand"><%= image_tag('logo.png') %></a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li class="user_menu">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+          <span class="navbar_el_icon ion-person"></span>&nbsp;&nbsp;<%=current_user.name%> <span id="currentUserIdHidden" style="display:none;"><%= current_user.id%></span><span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-right">
+          <!-- Menu Footer-->
+          <% if current_user.present? %>
+              <li><%= link_to "ログアウト", destroy_user_session_path, method: :delete %></li>
+              <!--<li><%#= link_to "ユーザ設定", "/user/edit/#{current_user.id}" %></li>-->
+          <% else %>
+              <li><%= link_to "ログイン", new_user_session_path %></li>
+          <% end %>
+          <% s = SystemSetting.find_value('order_lists') %>
+          <% if current_user && s %>
+              <% if s == UserConfig::ORDER_LIST_UC %>
+                  <li><%= link_to "受注ユーザ表示設定", "/user_config/order_list_update" %></li>
+              <% elsif s == UserConfig::ORDER_LIST_ADMIN %>
+                  <li><%= link_to "受注表示設定", "/user_config/order_list_update" %></li>
+              <% end %>
+          <% end %>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</header>
+
+
+<div id="main_wrapper">
+  <!-- Right side column. Contains the navbar and content of the page -->
+  <aside class="right-side">
+    <!-- Content Header (Page header) -->
+    <%= render :partial => "layouts/message" %>
+    <!-- Main content -->
+    <section class="content">
+
+      <%= yield %>
+
+    </section>
+    <!-- /.content -->
+
+  </aside>
+  <!-- /.right-side -->
+</div>
+<!-- ./wrapper -->
+<!-- Left side column. contains the logo and sidebar -->
+    <% use_wms = SystemSetting.find_value "use_wms" %>
+    <% is_use_inorder = SystemSetting.find_value "is_use_inorder" %>
+      <nav id="side_nav">
+        <ul>
+          <li>
+            <a href="#" class="js-open-sub_panel">
+              <span class="side_icon"><i class="fa fa-home"></i></span>
+              <span class="nav_title">ショップ管理</span>
+            </a>
+            <div class="sub_panel">
+              <div class="side_inner">
+                <h4 class="panel_heading">ショップ管理</h4>
+                <ul>
+                  <li><a href="/company_info"><i class="fa fa-angle-double-right"></i> 会社情報マスタ</a></li>
+                  <li><a href="/shop"><i class="fa fa-angle-double-right"></i> ショップマスタ</a></li>
+                  <li>
+                    <% if CompanyInfo.first.start_date <= ('2015-09-10').to_date %>
+                        <a href="/shop/yahoo_shop_auth"><i class="fa fa-angle-double-right"></i>Yahoo認証</a>
+                    <% else %>
+                        <% Shop.act.where(shop_type: Shop::YAHOO).order(:id).each do |shop| %>
+                            <a href="/shop/yconnect_access_token?id=<%= shop.id %>"><i class="fa fa-angle-double-right"></i><%= shop.name %>:認証</a>
+                        <% end %>
+                    <% end %>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </li>
+          <li>
+            <a href="#" class="js-open-sub_panel">
+              <span class="side_icon"><i class="fa fa-cubes"></i></span>
+              <span class="nav_title">商品管理</span>
+            </a>
+            <div class="sub_panel">
+              <div class="side_inner">
+                <h4 class="panel_heading">商品管理</h4>
+                <ul>
+                  <li><a href="/page_master/top"><i class="fa fa-angle-double-right"></i> モール商品管理</a></li>
+                  <!--<li><a href="/item_generate/show_mapper"><i class="fa fa-angle-double-right"></i> 商品一括登録項目マップ</a></li>-->
+                  <%ec_shops = Shop.where(shop_type: Shop::MY_EC).order('id')%>
+                  <% unless ec_shops.empty?%>
+                      <li>
+                        <a href="#" id="ec_shops"><i class="fa fa-angle-double-right"></i> EC商品管理</a>
+                        <ul class="treeview" id="ec_shops_opts">
+                          <% ec_shops.each do |ec_shop| %>
+                              <li><a href="/ec_items/top?shop_id=<%= ec_shop.id %>"><%= ec_shop.name %></a></li>
+                          <% end %>
+                        </ul>
+                      </li>
+                      <script type="text/javascript">
+                        $("#ec_shops_opts").hide();
+                        $("#ec_shops").click(function () {
+                          $("#ec_shops_opts:not(:animated)").slideToggle("slow");
+                          return false;
+                        });
+                      </script>
+                  <% end %>
+                  <li><a href="/set_sku"><i class="fa fa-angle-double-right"></i> セット商品管理</a></li>
+                  <li><a href="/item_mapping"><i class="fa fa-angle-double-right"></i> 商品マスタ自動変換管理</a></li>
+                  <li><a href="/category_mapping"><i class="fa fa-angle-double-right"></i> カテゴリマッピング管理</a></li>
+                </ul>
+              </div>
+            </div>
+          </li>
+          <li>
+            <a href="#" class="js-open-sub_panel">
+              <span class="side_icon"><i class="fa fa-sliders"></i></span>
+              <span class="nav_title">在庫管理</span>
+            </a>
+            <div class="sub_panel">
+              <div class="side_inner">
+                <h4 class="panel_heading">在庫管理</h4>
+                <ul>
+                  <li><a href="/stocks/top"><i class="fa fa-angle-double-right"></i> 在庫管理</a></li>
+                  <% if SystemSetting.find_value("stock_control_type") == SystemSetting::STOCK_CONTROL_SYNCIT %>
+                      <li><a href="/stocks/index"><i class="fa fa-angle-double-right"></i> 在庫検索</a></li>
+                      <li><a href="/stock_history/index"><i class="fa fa-angle-double-right"></i> 在庫変動履歴</a></li>
+                  <% end %>
+                </ul>
+              </div>
+            </div>
+          </li>
+          <li>
+            <a href="#" class="js-open-sub_panel">
+              <span class="side_icon"><i class="fa fa-shopping-cart"></i></span>
+              <span class="nav_title">注文管理</span>
+            </a>
+            <div class="sub_panel">
+              <div class="side_inner">
+                <h4 class="panel_heading">注文管理</h4>
+                <ul>
+                  <li><a href="/order/index"><i class="fa fa-angle-double-right"></i> 受注管理</a></li>
+                  <li><a href="/reget_order/index"><i class="fa fa-angle-double-right"></i> 再取得リスト</a></li>
+                  <% if use_wms %>
+                    <li><a href="/henpin/index"><i class="fa fa-angle-double-right"></i> 返品管理</a></li>
+                  <% end %>
+                  <% if Rails.env.development? %>
+                      <li><a href="/order_detail/index?list=pick"><i class="fa fa-angle-double-right"></i> 出荷管理</a></li>
+                  <% end %>
+                  <% if SystemSetting.find_value('use_nissen_flag') %>
+                      <li><%= link_to 'ニッセン請求書CSV出力', nissen_orders_path, class: 'fa fa-angle-double-right' %></li>
+                  <% end %>
+                  <li><a href="/rakuten_multi_settlement_mails/index"><i class="fa fa-angle-double-right"></i> 楽天マルチ決済入金確認管理</a></li>
+                  <li><a href="/bank_transfers/index"><i class="fa fa-angle-double-right"></i> 銀行振込入金確認管理</a></li>
+                </ul>
+              </div>
+            </div>
+          </li>
+          <% if is_use_inorder %>
+              <li>
+                <a href="#" class="js-open-sub_panel">
+                  <span class="side_icon"><i class="fa fa-fax"></i></span>
+                  <span class="nav_title">発注管理</span>
+                </a>
+                <div class="sub_panel">
+                  <div class="side_inner">
+                    <h4 class="panel_heading">発注管理</h4>
+                    <ul>
+                      <li><a href="/inorder/index"><i class="fa fa-angle-double-right"></i> 発注管理</a></li>
+                      <li><a href="/inorder/order_received_list"><i class="fa fa-angle-double-right"></i> 現在発注対象受注リスト</a></li>
+                      <li><a href="/inorder/no_supplier_list"><i class="fa fa-angle-double-right"></i> 仕入先未定在庫商品リスト</a></li>
+                      <li><a href="/inorder/no_supplier_direct_list"><i class="fa fa-angle-double-right"></i> 仕入先未定直送商品リスト</a></li>
+                      <li><a href="/inorder_detail/import_csv"><i class="fa fa-angle-double-right"></i> 発注明細一括作成</a></li>
+                      <li><a href="/inorder/create_slip"><i class="fa fa-angle-double-right"></i> 個別発注</a></li>
+                      <li><a href="/inshipment/index"><i class="fa fa-angle-double-right"></i> 入庫一覧</a></li>
+                      <li><a href="/inorder_product/index"><i class="fa fa-angle-double-right"></i> 商品別入庫商品マスタ</a></li>
+                      <li><a href="/inorder_item/index"><i class="fa fa-angle-double-right"></i> 仕入先別入庫商品マスタ</a></li>
+                      <li><a href="/supplier/index"><i class="fa fa-angle-double-right"></i> 仕入先管理</a></li>
+                      <li><a href="/supplier_holiday/index"><i class="fa fa-angle-double-right"></i> 仕入先休日</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </li>
+          <% end %>
+          <li>
+            <a href="#" class="js-open-sub_panel">
+              <span class="side_icon"><i class="fa fa-arrow-circle-right"></i></span>
+              <span class="nav_title">同期管理</span>
+            </a>
+            <div class="sub_panel">
+              <div class="side_inner">
+                <h4 class="panel_heading">同期管理</h4>
+                <ul>
+                  <li><a href="/task/top"><i class="fa fa-angle-double-right"></i> タスク管理</a></li>
+                  <% if CompanyInfo.first.ship_post_mall_type == CompanyInfo::SHIP_POST_BY_CSV %>
+                      <li><a href="/task/csv_for_post"><i class="fa fa-angle-double-right"></i> 楽天出荷データ反映CSV出力</a></li>
+                  <% end %>
+                </ul>
+              </div>
+            </div>
+          </li>
+          <li>
+            <a href="#" class="js-open-sub_panel">
+              <span class="side_icon"><i class="fa fa-edit"></i></span>
+              <span class="nav_title">各種設定</span>
+            </a>
+            <div class="sub_panel">
+              <div class="side_inner">
+                <h4 class="panel_heading">受注関連設定</h4>
+                <ul>
+                  <li><a href="/order_group_status"><i class="fa fa-angle-double-right"></i> 受注進捗グループマスタ</a></li>
+                  <li><a href="/order_status"><i class="fa fa-angle-double-right"></i> 受注進捗コードマスタ</a></li>
+                  <li><a href="/payment_type/index"><i class="fa fa-angle-double-right"></i> 決済方法管理マスタ</a></li>
+                  <li><a href="/payment_num/index"><i class="fa fa-angle-double-right"></i> 支払回数管理マスタ</a></li>
+                  <li><a href="/payment_status/index"><i class="fa fa-angle-double-right"></i> 決済状態管理マスタ</a></li>
+                  <li><a href="/carrier/index"><i class="fa fa-angle-double-right"></i> 配送方法マスタ</a></li>
+                  <li><a href="/delivery_time/index"><i class="fa fa-angle-double-right"></i> 配送時間マスタ</a></li>
+                  <li><a href="/delivery_leadtime/index"><i class="fa fa-angle-double-right"></i> 配送LTマスタ</a></li>
+                  <li><a href="/billing_infos/index"><i class="fa fa-angle-double-right"></i> 運賃請求先マスタ</a></li>
+                </ul>
+                <h4 class="panel_heading">その他設定</h4>
+                <ul>
+                  <li><a href="/mail_template"><i class="fa fa-angle-double-right"></i> メールテンプレートマスタ</a></li>
+                  <li><a href="/black_lists"><i class="fa fa-angle-double-right"></i> ブラックリストマスタ</a></li>
+                  <li><a href="/yuubin"><i class="fa fa-angle-double-right"></i> 郵便番号マスタ</a></li>
+                  <li><a href="/ritou"><i class="fa fa-angle-double-right"></i> 離島マスタ</a></li>
+                  <li><a href="/user"><i class="fa fa-angle-double-right"></i> ユーザー管理</a></li>
+                </ul>
+              </div>
+            </div>
+          </li>
+
+        </ul>
+
+      </nav>
+      <!-- /.sidebar -->
+
+<!-- add new calendar event modal -->
+
+
+<script src="/tisa/js/jquery.easing.1.3.min.js"></script>
+<script src="/tisa/js/tinynav.js"></script>
+<script src="/tisa/lib/perfect-scrollbar/min/perfect-scrollbar-0.4.8.with-mousewheel.min.js"></script>
+<!-- common functions -->
+<script src="/tisa/js/tisa_common.js"></script>
+<!--<下記1行がないとdhtmlxPageError,index.erbで呼び出すと間に合わないため,assetsPipelineはpublic配下見ていない>-->
+<script src="/codebase/dhtmlx.js"></script>
+
+</body>
+</html>

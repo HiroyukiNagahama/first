@@ -1,0 +1,30 @@
+.sub_panel
+  -moz-transition: left .4s
+  -webkit-transition: left .4s
+  -o-transition: left .4s
+  -ms-transition: left .4s
+  transition: left .4s
+#side_nav
+  >ul
+    a
+      &.is-active
+        color: #B2F774
+        &:before
+          right: 0
+          opacity: 1
+      &:hover
+        background-color: #495256
+  .is-active
+    .sub_panel
+      left: 80px
+      -moz-transition: left .2s
+      -webkit-transition: left .2s
+      -o-transition: left .2s
+      -ms-transition: left .2s
+      transition: left .2s
+.surface
+  position: fixed
+  left: 0
+  right: 0
+  top: 0
+  bottom: 0

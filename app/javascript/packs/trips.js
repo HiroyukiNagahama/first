@@ -3,6 +3,7 @@ Vue.config.devtools = true;
 import Vue from 'vue/dist/vue.esm.js'
 import Index from '../vues/trips/index.vue'
 
+
 // var head = new Vue({
 //     el: '#app',
 //     components: {

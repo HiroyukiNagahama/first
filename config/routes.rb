@@ -10,12 +10,6 @@ Rails.application.routes.draw do
     resources :task_api, only: [:index, :create, :update]
   end
 
-  resources :tasks, only: [:index] do
-    collection do
-      get 'hoge'
-    end
-  end
-
   resources :prefectures, only: [:index] do
     collection do
       get 'edit_ajax'
@@ -23,6 +17,9 @@ Rails.application.routes.draw do
       post 'delete_ajax'
       get 'load_index'
       get 'lists'
+      get 'edit_vue'
+      get 'load_user'
+      post 'add_prefecture'
     end
   end
 
@@ -31,6 +28,12 @@ Rails.application.routes.draw do
       get 'load_index'
       patch 'update/:id', to: 'trips#update'
       post 'delete'
+    end
+  end
+
+  resources :tasks, only: [:index] do
+    collection do
+      get 'hoge'
     end
   end
 

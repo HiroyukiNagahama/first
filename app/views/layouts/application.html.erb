@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= yield(:title) %> | Ruby on Rails Tutorial Sample App</title>
+    <title><%= yield(:title) %> | tabikaze.com</title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -12,9 +12,10 @@
   </head>
   <body>
   <%= render 'layouts/header' %>
-  <div class="container">
+  <div class="container" style="padding-top:60px;">
+    <%= render :partial => "layouts/message" %>
     <%= yield %>
-    <%= render 'layouts/footer' %>
   </div>
+  <%= render 'layouts/footer' %>
   </body>
 </html>

@@ -1,0 +1,47 @@
+#message
+  & > div
+    z-index: 999999
+  .notify,
+  .warning,
+  .error
+    position: absolute
+    right: 0
+    top: 8px
+    width: 320px
+    cursor: pointer
+    padding: 12px
+    background-color: rgba(#ec2727, .9)
+    &.notify
+      background-color: rgba(#68bd80, .95)
+    &.warning
+      background-color: rgba(#e2bc22, .9)
+    &.error
+      background-color: rgba(#ec2727, .9)
+    ul
+      margin-bottom: 0
+      padding-left: 16px
+    li
+      font-size: 12px
+      line-height: 1.5
+      margin-bottom: 4px
+      color: white
+      &:last-child
+        margin-bottom: 0
+    &::before
+      display: inline-block
+      font: normal normal normal 14px/1 FontAwesome
+      font-size: inherit
+      text-rendering: auto
+      -webkit-font-smoothing: antialiased
+      content: '\f00d'
+      position: absolute
+      left: -8px
+      top: -8px
+      font-size: 14px
+      width: 20px
+      height: 20px
+      background: black
+      color: white
+      line-height: 20px
+      text-align: center
+      border-radius: 50%

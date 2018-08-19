@@ -27,15 +27,36 @@ class PrefecturesController < ApplicationController
     render json: @prefectures
   end
 
+  def load_user
+    render json: { code: '08', current_company_code: '3' }
+  end
+
+  def add_prefecture
+    pref = Prefecture.new(add_prefecture_params)
+    p add_prefecture_params
+    pref.go_flag = false
+    pref.save!
+    render json: pref
+  end
+
   def lists
     a = Prefecture.all.collect{|p| { name: p.name } }
     p a
     render json: a
   end
 
+  def edit_vue
+    @prefecture = Prefecture.first
+    render json: @prefecture
+  end
+
   private
 
   def setup_update_params
     params.require(:code)
+  end
+
+  def add_prefecture_params
+    params.require(:prefecture).permit(:name, :code)
   end
 end

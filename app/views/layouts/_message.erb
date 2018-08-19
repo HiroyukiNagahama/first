@@ -1,0 +1,13 @@
+<div id="message">
+  <% [:notify, :warning, :error].each do |message_tag| %>
+    <% if messages = flash[message_tag] %>
+      <% if messages.instance_of?(Array) %>
+        <div class='<%= message_tag.to_s %> js-click-hide-self' data-messages='["<%= messages.join('","') %>"]'>
+        </div>
+      <% elsif messages.instance_of?(String) %>
+        <div class="<%= message_tag.to_s %>  js-click-hide-self <%= message_tag.to_s == 'notify' ? 'js-timeout-hide-self' : '' %>" data-messages='["<%= messages %>"]'>
+        </div>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

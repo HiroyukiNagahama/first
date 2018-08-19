@@ -65,8 +65,9 @@
     axios.defaults.headers['X-CSRF-TOKEN'] = $('meta[name=csrf-token]').attr('content')
     import Multiselect from 'vue-multiselect'
 
+
     export default {
-        components: {Multiselect},
+        components: { Multiselect },
         data: function () {
             return {
                 trips: [],
@@ -74,7 +75,7 @@
                 prefecture_options: []
             }
         },
-        mounted: function () {
+        created: function () {
             this.fetchTrips();
             this.fetchPrefectures();
             this.fetchPrefectureLists();

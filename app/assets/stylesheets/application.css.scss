@@ -14,10 +14,15 @@
  *= require_self
  */
 @import "bootstrap";
+@import "borderCard";
+@import "borderTable";
+@import "message";
+@import "js-open-sub_panel";
+@import "customBootstrap";
 
 
 body {
-  padding-top: 60px;
+  //padding-top: 60px;
 }
 
 section {
