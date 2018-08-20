@@ -31,11 +31,23 @@ class PrefecturesController < ApplicationController
     render json: { code: '08', current_company_code: '3' }
   end
 
+  def load_area
+    render json: Prefecture::AREAS
+  end
+
   def add_prefecture
     pref = Prefecture.new(add_prefecture_params)
     p add_prefecture_params
     pref.go_flag = false
     pref.save!
+    render json: pref
+  end
+
+  def change_area_cd
+    params.inspect
+    pref = Prefecture.find_by(code: params[:prefecture][:code])
+    pref.attributes = change_area_cd_params
+    pref.save
     render json: pref
   end
 
@@ -58,5 +70,9 @@ class PrefecturesController < ApplicationController
 
   def add_prefecture_params
     params.require(:prefecture).permit(:name, :code)
+  end
+
+  def change_area_cd_params
+    params.require(:prefecture).permit(:code, :area_cd)
   end
 end

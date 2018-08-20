@@ -19,7 +19,9 @@ Rails.application.routes.draw do
       get 'lists'
       get 'edit_vue'
       get 'load_user'
+      get 'load_area'
       post 'add_prefecture'
+      post 'change_area_cd'
     end
   end
 
